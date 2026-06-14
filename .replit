@@ -1,0 +1,79 @@
+modules = ["python-base-3.13"]
+[agent]
+expertMode = true
+stack = "BEST_EFFORT_FALLBACK"
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+DATABASE_MODE = "sqlite"
+SQLITE_PATH = "./data/bot.db"
+LOCALES_PATH = "./locales"
+REDIS_URL = "redis://localhost:6379/0"
+WEB_API_HOST = "0.0.0.0"
+WEB_API_PORT = "5000"
+REMNAWAVE_API_URL = "https://panel.example.com"
+REMNAWAVE_AUTH_TYPE = "api_key"
+SALES_MODE = "tariffs"
+TRIAL_DURATION_DAYS = "3"
+TRIAL_TRAFFIC_LIMIT_GB = "10"
+TRIAL_DEVICE_LIMIT = "1"
+DEFAULT_DEVICE_LIMIT = "3"
+MAX_DEVICES_LIMIT = "15"
+DEFAULT_TRAFFIC_LIMIT_GB = "100"
+BASE_SUBSCRIPTION_PRICE = "0"
+PRICE_14_DAYS = "7000"
+PRICE_30_DAYS = "10000"
+PRICE_60_DAYS = "25900"
+PRICE_90_DAYS = "36900"
+PRICE_180_DAYS = "69900"
+PRICE_360_DAYS = "109900"
+AVAILABLE_SUBSCRIPTION_PERIODS = "30,90,180"
+AVAILABLE_RENEWAL_PERIODS = "30,90,180"
+LOG_LEVEL = "INFO"
+LOG_FILE = "./data/bot.log"
+SUPPORT_MENU_ENABLED = "true"
+REFERRAL_PROGRAM_ENABLED = "true"
+ADMIN_NOTIFICATIONS_ENABLED = "false"
+ADMIN_REPORTS_ENABLED = "false"
+ALLOW_MIGRATION_FAILURE = "true"
+SUPPORT_USERNAME = "@support"
+BACKUP_LOCATION = "./data/backups"
+WEB_API_ENABLED = "true"
+WEB_API_DOCS_ENABLED = "true"
+ADMIN_IDS = "8176561949"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "uv run python main.py"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "vm"
+run = ["uv", "run", "python", "main.py"]
