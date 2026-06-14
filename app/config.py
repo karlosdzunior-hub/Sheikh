@@ -1220,14 +1220,7 @@ class Settings(BaseSettings):
 
     def get_database_url(self) -> str:
         if self.DATABASE_URL and self.DATABASE_URL.strip():
-            url = self.DATABASE_URL.strip()
-            # Convert plain postgresql:// to asyncpg dialect (Replit Helium provides plain URL)
-            if url.startswith('postgresql://') or url.startswith('postgres://'):
-                url = url.replace('postgresql://', 'postgresql+asyncpg://', 1)
-                url = url.replace('postgres://', 'postgresql+asyncpg://', 1)
-                # Remove sslmode param — asyncpg doesn't support it as query param
-                url = re.sub(r'[?&]sslmode=[^&]*', '', url).rstrip('?&')
-            return url
+            return self.DATABASE_URL.strip()
 
         mode = self.DATABASE_MODE.lower()
 
