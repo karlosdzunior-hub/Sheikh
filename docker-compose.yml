@@ -109,3 +109,4 @@ networks:
       com.docker.network.driver.mtu: 1350
   remnawave-network:
     external: true
+    name: remnawave-network
