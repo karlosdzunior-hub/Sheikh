@@ -23,6 +23,7 @@ from .stars import TelegramStarsMixin
 from .tribute import TributePaymentMixin
 from .wata import WataPaymentMixin
 from .yookassa import YooKassaPaymentMixin
+from .yoomoney import YooMoneyPaymentMixin
 
 
 __all__ = [
@@ -45,4 +46,5 @@ __all__ = [
     'TributePaymentMixin',
     'WataPaymentMixin',
     'YooKassaPaymentMixin',
+    'YooMoneyPaymentMixin',
 ]

@@ -219,6 +219,13 @@ async def route_payment_by_method(
             await process_riopay_payment_amount(message, db_user, db, amount_kopeks, state)
         return True
 
+    if payment_method == 'yoomoney':
+        from .yoomoney import process_yoomoney_payment_amount
+
+        async with AsyncSessionLocal() as db:
+            await process_yoomoney_payment_amount(message, db_user, db, amount_kopeks, state)
+        return True
+
     return False
 
 
@@ -729,19 +736,16 @@ def register_balance_handlers(dp: Dispatcher):
         F.data.regexp(r'^topup_platega_m\d+$'),
     )
 
-    from .yookassa import check_yookassa_payment_status
-
-    dp.callback_query.register(check_yookassa_payment_status, F.data.startswith('check_yookassa_'))
-
     from .tribute import start_tribute_payment
 
     dp.callback_query.register(start_tribute_payment, F.data == 'topup_tribute')
 
     dp.callback_query.register(request_support_topup, F.data == 'topup_support')
 
-    from .yookassa import check_yookassa_payment_status
+    from .yoomoney import start_yoomoney_payment, check_yoomoney_payment_status
 
-    dp.callback_query.register(check_yookassa_payment_status, F.data.startswith('check_yookassa_'))
+    dp.callback_query.register(start_yoomoney_payment, F.data == 'topup_yoomoney')
+    dp.callback_query.register(check_yoomoney_payment_status, F.data.startswith('check_yoomoney_'))
 
     dp.message.register(process_topup_amount, BalanceStates.waiting_for_amount)
 

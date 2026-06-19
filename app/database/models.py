@@ -172,6 +172,7 @@ class PaymentMethod(Enum):
     JUPITER = 'jupiter'
     DONUT = 'donut'
     LAVA = 'lava'
+    YOOMONEY = 'yoomoney'
     MANUAL = 'manual'
     BALANCE = 'balance'
 
@@ -251,6 +252,40 @@ class YooKassaPayment(Base):
 
     def __repr__(self):
         return f'<YooKassaPayment(id={self.id}, yookassa_id={self.yookassa_payment_id}, amount={self.amount_rubles}₽, status={self.status})>'
+
+
+class YooMoneyPayment(Base):
+    __tablename__ = 'yoomoney_payments'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=True)
+    label = Column(String(255), unique=True, nullable=False, index=True)
+    amount_kopeks = Column(Integer, nullable=False)
+    description = Column(Text, nullable=True)
+    status = Column(String(50), nullable=False, default='pending')
+    operation_id = Column(String(255), nullable=True)
+    sender = Column(String(255), nullable=True)
+    metadata_json = Column(JSON, nullable=True)
+    transaction_id = Column(Integer, ForeignKey('transactions.id'), nullable=True)
+    created_at = Column(AwareDateTime(), default=func.now())
+    updated_at = Column(AwareDateTime(), default=func.now(), onupdate=func.now())
+    user = relationship('User', backref='yoomoney_payments')
+    transaction = relationship('Transaction', backref='yoomoney_payment')
+
+    @property
+    def amount_rubles(self) -> float:
+        return self.amount_kopeks / 100
+
+    @property
+    def is_pending(self) -> bool:
+        return self.status == 'pending'
+
+    @property
+    def is_succeeded(self) -> bool:
+        return self.status == 'succeeded'
+
+    def __repr__(self):
+        return f'<YooMoneyPayment(id={self.id}, label={self.label}, amount={self.amount_rubles}₽, status={self.status})>'
 
 
 class SavedPaymentMethod(Base):

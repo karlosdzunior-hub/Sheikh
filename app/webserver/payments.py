@@ -1669,6 +1669,61 @@ def create_payment_router(bot: Bot, payment_service: PaymentService) -> APIRoute
 
         routes_registered = True
 
+    if settings.is_yoomoney_enabled() and settings.YOOMONEY_NOTIFICATION_SECRET:
+
+        @router.post('/webhook/yoomoney')
+        async def yoomoney_webhook(request: Request) -> Response:
+            from app.external.yoomoney_webhook import verify_yoomoney_signature
+
+            try:
+                form_data = await request.form()
+                params = dict(form_data)
+            except Exception as e:
+                logger.warning('ЮMoney webhook: ошибка чтения формы', error=e)
+                return Response(status_code=status.HTTP_400_BAD_REQUEST)
+
+            secret = settings.YOOMONEY_NOTIFICATION_SECRET or ''
+            if not verify_yoomoney_signature(params, secret):
+                return Response(status_code=status.HTTP_400_BAD_REQUEST)
+
+            label = params.get('label', '')
+            operation_id = params.get('operation_id', '')
+            amount_str = params.get('amount', '0')
+            notification_type = params.get('notification_type', '')
+
+            if notification_type not in ('p2p-incoming', 'card-incoming'):
+                return Response(status_code=status.HTTP_200_OK)
+
+            if not label:
+                logger.warning('ЮMoney webhook: нет label в уведомлении')
+                return Response(status_code=status.HTTP_200_OK)
+
+            try:
+                from app.database.crud.yoomoney import get_yoomoney_payment_by_label
+
+                async for db in get_db():
+                    payment = await get_yoomoney_payment_by_label(db, label)
+                    if not payment:
+                        logger.warning('ЮMoney webhook: платёж не найден', label=label)
+                        break
+
+                    if payment.status == 'succeeded':
+                        logger.info('ЮMoney webhook: платёж уже обработан', label=label)
+                        break
+
+                    await payment_service._process_successful_yoomoney_payment(
+                        db, payment, {'operation_id': operation_id, 'sender': params.get('sender', '')}
+                    )
+                    logger.info('ЮMoney webhook обработан', label=label, operation_id=operation_id)
+                    break
+
+            except Exception as e:
+                logger.exception('ЮMoney webhook: ошибка обработки', error=e)
+
+            return Response(status_code=status.HTTP_200_OK)
+
+        routes_registered = True
+
     if routes_registered:
 
         @router.get('/health/payment-webhooks')
@@ -1699,6 +1754,7 @@ def create_payment_router(bot: Bot, payment_service: PaymentService) -> APIRoute
                     'jupiter_enabled': settings.is_jupiter_enabled(),
                     'donut_enabled': settings.is_donut_enabled(),
                     'lava_enabled': settings.is_lava_enabled(),
+                    'yoomoney_enabled': settings.is_yoomoney_enabled(),
                 }
             )
 

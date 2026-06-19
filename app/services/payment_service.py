@@ -29,6 +29,7 @@ from app.services.payment import (
     TributePaymentMixin,
     WataPaymentMixin,
     YooKassaPaymentMixin,
+    YooMoneyPaymentMixin,
 )
 from app.services.payment.antilopay import AntilopayPaymentMixin
 from app.services.payment.aurapay import AuraPayPaymentMixin
@@ -716,6 +717,7 @@ class PaymentService(
     JupiterPaymentMixin,
     DonutPaymentMixin,
     LavaPaymentMixin,
+    YooMoneyPaymentMixin,
 ):
     """Основной интерфейс платежей, делегирующий работу специализированным mixin-ам."""
 

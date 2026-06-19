@@ -461,6 +461,16 @@ class Settings(BaseSettings):
     YOOKASSA_RECURRENT_ENABLED: bool = False
     YOOKASSA_RECURRENT_REQUIRED: bool = False
     YOOKASSA_TEST_MODE: bool = False
+
+    YOOMONEY_ENABLED: bool = False
+    YOOMONEY_DISPLAY_NAME: str = 'ЮMoney'
+    YOOMONEY_WALLET: str | None = None
+    YOOMONEY_TOKEN: str | None = None
+    YOOMONEY_NOTIFICATION_SECRET: str | None = None
+    YOOMONEY_MIN_AMOUNT_KOPEKS: int = 5000
+    YOOMONEY_MAX_AMOUNT_KOPEKS: int = 1500000
+    YOOMONEY_PAYMENT_TYPE: str = 'AC'
+
     SUPPORT_TOPUP_ENABLED: bool = True
     PAYMENT_VERIFICATION_AUTO_CHECK_ENABLED: bool = False
     PAYMENT_VERIFICATION_AUTO_CHECK_INTERVAL_MINUTES: int = 10
@@ -2073,6 +2083,13 @@ class Settings(BaseSettings):
     def get_yookassa_display_name(self) -> str:
         name = (self.YOOKASSA_DISPLAY_NAME or '').strip()
         return name or 'YooKassa'
+
+    def is_yoomoney_enabled(self) -> bool:
+        return self.YOOMONEY_ENABLED and self.YOOMONEY_WALLET is not None
+
+    def get_yoomoney_display_name(self) -> str:
+        name = (self.YOOMONEY_DISPLAY_NAME or '').strip()
+        return name or 'ЮMoney'
 
     def is_nalogo_enabled(self) -> bool:
         return self.NALOGO_ENABLED and self.NALOGO_INN is not None and self.NALOGO_PASSWORD is not None
