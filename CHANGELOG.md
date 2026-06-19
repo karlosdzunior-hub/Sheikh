@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.61.0](https://github.com/karlosdzunior-hub/Sheikh/compare/v3.60.0...v3.61.0) (2026-06-19)
+
+
+### New Features
+
+* add files 1-100 ([e204442](https://github.com/karlosdzunior-hub/Sheikh/commit/e204442cb5a7ee3c7475f3489fd9bd3d3be31a83))
+* add files 101-200 ([263925a](https://github.com/karlosdzunior-hub/Sheikh/commit/263925ae0bf4ea6955f33087f2577a400e822b15))
+* add files 201-300 ([58d9327](https://github.com/karlosdzunior-hub/Sheikh/commit/58d9327dd32b7c3d2da37eb906cec5a5295567ce))
+* initial bot setup from Replit ([7572d82](https://github.com/karlosdzunior-hub/Sheikh/commit/7572d82cb61dd1e61238636f52e971364a9f2b62))
+
 ## [3.60.0](https://github.com/BEDOLAGA-DEV/remnawave-bedolaga-telegram-bot/compare/v3.59.0...v3.60.0) (2026-06-05)
 
 
